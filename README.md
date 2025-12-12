@@ -1,22 +1,24 @@
 # Federated Learning Project
 
-This repository contains a simple implementation of **Federated Learning**, a machine learning approach where the model is trained across multiple devices (clients) without centralizing the data. This allows data privacy and distributed computation.
+This repository contains a simple **Federated Learning** simulation implemented in Python.
 
 ## Project Overview
+Federated Learning allows training a machine learning model using **data distributed across multiple locations** without centralizing the data. In this project, we simulate this process on a single machine:
 
-In Federated Learning, each client has its own local dataset. The server coordinates the training process by aggregating updates from the clients without accessing their raw data. 
+- **model.py** — defines the model architecture that will be trained.
+- **server.py** — coordinates the training process, aggregating updates from clients.
+- **client.py** — simulates a client holding a portion of the data and performing local training.
 
-This project includes:
+> **Note:** In this simulation, all clients run locally on my machine for demonstration purposes. In a real-world scenario, clients would be distributed across different devices or locations.
 
-- **model.py** — defines the model to be trained.
-- **server.py** — coordinates the training process and aggregates updates from clients.
-- **client.py** — simulates a client holding a part of the data.
-- **Federated_Review.pdf** — a PDF with a comprehensive theoretical overview of Federated Learning.
+## Running the Project
+You can run this project using four terminals (or similar environments):
 
-## How to Run
+1. In the terminals, write:
+```bash
+python server.py
+python client.py 0
+python client.py 1
+python client.py 2
 
-You will need **four terminals** (or any similar environment):
-
-1. In the first terminal, run the server:
-   ```bash
-   python server.py
+finally you can see the results and accuracy of the trained model
