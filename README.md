@@ -14,7 +14,7 @@ Federated Learning allows training a machine learning model using **data distrib
 ## Running the Project
 You can run this project using four terminals (or similar environments):
 
-1. In the terminals, write:
+In the terminals, write:
 ```bash
 python server.py
 python client.py 0
