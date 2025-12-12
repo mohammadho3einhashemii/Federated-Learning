@@ -20,5 +20,6 @@ python server.py
 python client.py 0
 python client.py 1
 python client.py 2
+```
 
 finally you can see the results and accuracy of the trained model
