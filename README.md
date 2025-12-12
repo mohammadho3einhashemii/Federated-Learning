@@ -26,11 +26,11 @@ You can run the full setup using **four terminals** (or CMD/PowerShell windows):
 
 1. **Start the server**
 python server.py
-
+ 
 2. **Start Three clients**
-python client.py 0
-python client.py 1
+python client.py 0 ___
+python client.py 1___
 python client.py 2
 
 
-finally you can see the result and accuracy of trianed model in the server window .
+finally you can see the result and accuracy of trianed model in the server window !
