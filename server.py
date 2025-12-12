@@ -1,32 +1,19 @@
 import flwr as fl
+from model import Net                                                                                   #از فایل مدل، کلاس نت را برای استفاده از مدل ایمپروت کردم
 import torch
-from torch.utils.data import Dataset, DataLoader
-import pandas as pd
-from model import Net
-from typing import Dict, List, Tuple
+from torchvision import datasets, transforms                                                             #این کتابخانه مخصوص کار با داده های تصویری
+from typing import Dict, Tuple, List
 
-# ----------------- دیتاست تست -----------------
-class Dataset_test(Dataset):
-    def __init__(self, csv_file):
-        data = pd.read_csv(csv_file)
-        self.X = data.iloc[:, 1:].values.astype("float32") / 255.0
-        self.y = data.iloc[:, 0].values.astype("int64")
-
-    def __len__(self):
-        return len(self.y)
-
-    def __getitem__(self, idx):
-        return torch.tensor(self.X[idx]), torch.tensor(self.y[idx])
-
-test_dataset = Dataset_test("fashion-mnist/fashion-mnist_test.csv")
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
+# دیتاست تست برای ارزیابی مدل نهایی
+transform = transforms.Compose([transforms.ToTensor()])
+test_dataset = datasets.MNIST('.', train=False, download=True, transform=transform)
+test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=32, shuffle=False)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 global_model = Net().to(device)
 
-# ----------------- تابع ارزیابی -----------------
-#محسابه دقت مدل روی دیتاست تست( می تواند توسط سرور یا کلاینت اجرا شود ) 
-def evaluate_model(model):                                                        
+# تابع ارزیابی
+def evaluate_model(model: torch.nn.Module) -> float:
     model.eval()
     correct, total = 0, 0
     with torch.no_grad():
@@ -38,12 +25,12 @@ def evaluate_model(model):
             total += target.size(0)
     return correct / total
 
-# ----------------- ذخیره تاریخچه دقت -----------------
+# ذخیره تاریخچه دقت
 history: Dict[str, List[Tuple[int, float]]] = {"server_accuracy": []}
 
-# ----------------- تابع evaluate_fn -----------------
- #ارزیابی مدل کلی سرور بعد از هر راند(فقط در سرور اجرا می شود ) 
+# تابع evaluate_fn برای چاپ دقت سرور
 def evaluate_fn(server_round: int, parameters, config) -> Tuple[float, Dict[str, float]]:
+    # بروز رسانی مدل سرور با پارامترهای دریافت شده
     for p, new_p in zip(global_model.parameters(), parameters):
         p.data = torch.tensor(new_p, device=device)
     acc = evaluate_model(global_model)
@@ -52,28 +39,27 @@ def evaluate_fn(server_round: int, parameters, config) -> Tuple[float, Dict[str,
     history["server_accuracy"].append((server_round, acc))
     return 1-acc, {"accuracy": acc}
 
-# ----------------- استراتژی FedAvg -----------------
-#از هر نوع استراتژی دیگر هم بسته به شرایط، نوع داده، سخت افزار و ... می توان استفاده کرد
+# استراتژی FedAvg
 strategy = fl.server.strategy.FedAvg(
-    fraction_fit=1.0,                                                   #چه درصدی از کلاینت ها به صورت تصادفی ، برای آموزش انتخاب شوند(100% کلاینت ها در اینجا)
-    fraction_evaluate=1.0,                                              
-    min_fit_clients=3,                                                   #حداقل تعداد کلاینت ها برای آموزش در هر راند
-    min_evaluate_clients=3,
-    min_available_clients=3,
+    fraction_fit=1.0,                                                                                         #نسبت کلاینت هایی که در هر دور آموزش شرکت می کنند(مثلا 1 یعنی همه کلاینت ها شرکت کنند)
+    fraction_evaluate=1.0,                   
+    min_fit_clients=3,                                                                                        # حداقل تعداد کلاینت هایی که بایددر یک دور آموزش شرکت کند
+    min_evaluate_clients=3,      
+    min_available_clients=3,                                                                                  #حدقال تعداد کلاینت های متصل به سرور برای شروع فرایند آموزش
     evaluate_fn=evaluate_fn
 )
 
-server_config = fl.server.ServerConfig(num_rounds=5)                  #تعداد راند ها 
+# کانفیگ سرور
+server_config = fl.server.ServerConfig(num_rounds=3)                                                          # مشخص کردن تعداد راند های آموزش
 
-# ----------------- اجرای سرور -----------------
+# اجرای سرور
 fl.server.start_server(
-    #برای اجرای لوکال از localhost استفاده می کنیم
-    #برای مقیاس واقعی کلاینت ها ، باید از 0.0.0.0 یا IP خود سرور استفاده کنیم
-    server_address="localhost:8080",                                     
+    server_address="localhost:8080",
     strategy=strategy,
     config=server_config
 )
 
+# چاپ تاریخچه نهایی
 print("\n=== Summary of Server Accuracy ===")
 for rnd, acc in history["server_accuracy"]:
     print(f"Round {rnd}: {acc:.4f}")
