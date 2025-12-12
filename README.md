@@ -1,36 +1,22 @@
-﻿# Federated Learning Project
+# Federated Learning Project
 
-This repository demonstrates a simple yet illustrative implementation of **Federated Learning (FL)** — a distributed training paradigm where multiple clients collaboratively train a model **without sharing their local data**.
+This repository contains a simple implementation of **Federated Learning**, a machine learning approach where the model is trained across multiple devices (clients) without centralizing the data. This allows data privacy and distributed computation.
 
----
+## Project Overview
 
-## Overview
+In Federated Learning, each client has its own local dataset. The server coordinates the training process by aggregating updates from the clients without accessing their raw data. 
 
-Federated Learning enables training on data that is geographically distributed or privacy-sensitive.  
-Instead of sending raw data to a central server, each client trains locally and only **model updates** are sent to the server. The server then aggregates these updates and forms the global model.
+This project includes:
 
-This project includes three main Python components:
+- **model.py** — defines the model to be trained.
+- **server.py** — coordinates the training process and aggregates updates from clients.
+- **client.py** — simulates a client holding a part of the data.
+- **Federated_Review.pdf** — a PDF with a comprehensive theoretical overview of Federated Learning.
 
-- **model.py** – Defines the machine learning model used across all clients.
-- **server.py** – Coordinates the training process, aggregates client updates, and maintains the global model.
-- **client.py** – Represents each participant in the federated system, performing local training on its own data.
+## How to Run
 
-A PDF file is also included, providing a concise theoretical explanation of Federated Learning concepts.
+You will need **four terminals** (or any similar environment):
 
----
-
-## How to Run the Project
-
-The system is designed to simulate one server and multiple clients.  
-You can run the full setup using **four terminals** (or CMD/PowerShell windows):
-
-1. **Start the server**
-python server.py
- 
-2. **Start Three clients**
-python client.py 0 ___
-python client.py 1___
-python client.py 2
-
-
-finally you can see the result and accuracy of trianed model in the server window !
+1. In the first terminal, run the server:
+   ```bash
+   python server.py
