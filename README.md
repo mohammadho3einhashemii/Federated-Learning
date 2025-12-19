@@ -9,6 +9,8 @@ Federated Learning allows training a machine learning model using **data distrib
 - **server.py** — coordinates the training process, aggregating updates from clients.
 - **client.py** — simulates a client holding a portion of the data and performing local training.
 
+This project uses MNIST dataset to train a simple MLP model ! 
+
 > **Note:** In this simulation, all clients run locally on my machine for demonstration purposes. In a real-world scenario, clients would be distributed across different devices or locations.
 
 ## Running the Project
