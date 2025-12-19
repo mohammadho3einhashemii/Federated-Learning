@@ -11,6 +11,8 @@ Federated Learning allows training a machine learning model using **data distrib
 
 This project uses MNIST dataset to train a simple MLP model ! 
 
+Also in this repository, there is a PDF file that I have reviewed everything about federated learning, you can first read it.
+
 > **Note:** In this simulation, all clients run locally on my machine for demonstration purposes. In a real-world scenario, clients would be distributed across different devices or locations.
 
 ## Running the Project
